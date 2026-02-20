@@ -41,3 +41,12 @@ body{
     z-index: 10;
 }
 .hidden { display: none !important; }
+button {
+    background: #f1c40f;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
