@@ -70,3 +70,11 @@ button {
     border-radius: 5px;
     box-shadow: 0 5px 0 #1e8449;
 }
+.jumping {
+    animation: jump 0.5s linear;
+}
+
+@keyframes jump {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.5) translateY(-20px); }
+}
