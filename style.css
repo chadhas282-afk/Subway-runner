@@ -50,3 +50,14 @@ button {
     font-weight: bold;
     margin-top: 10px;
 }
+.player {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: var(--player-color);
+    bottom: 50px;
+    left: 130px;
+    transition: left 0.1s ease;
+    border-radius: 5px;
+    box-shadow: 0 10px 0 #c0392b;
+}
