@@ -1,42 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Hopper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Super Hopper Mobile</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
     <div id="game-container">
+        <div id="score-container" class="hidden">
+            <div class="score-box">
+                <span class="label">SCORE</span>
+                <span id="score">0</span>
+            </div>
+        </div>
+
         <div id="world"></div>
 
         <div id="ui-layer">
-            <div id="score-display" class="hidden">
-                SCORE: <span id="score">0</span>
-            </div>
-
             <div id="start-screen" class="center-screen">
                 <h1 class="title">SUPER HOPPER</h1>
+                <p class="subtitle">MY CUTE ADVENTURE</p>
                 <button id="start-btn">PRESS START</button>
             </div>
 
             <div id="game-over-screen" class="center-screen hidden">
                 <h1 class="title">GAME OVER</h1>
-                <p>SCORE: <span id="final-score">0</span></p>
+                <p class="subtitle">FINAL SCORE: <span id="final-score">0</span></p>
                 <button id="restart-btn">TRY AGAIN</button>
             </div>
+
+            <div id="mobile-controls">
+                <button id="left-btn" class="ctrl-btn">←</button>
+                <button id="jump-btn" class="ctrl-btn">JUMP</button>
+                <button id="right-btn" class="ctrl-btn">→</button>
+            </div>
         </div>
-    </div>
-    <div id="mobile-controls">
-        <button id="left-btn" class="ctrl-btn">←</button>
-        <button id="jump-btn" class="ctrl-btn">JUMP</button>
-        <button id="right-btn" class="ctrl-btn">→</button>
     </div>
 
     <script src="script.js"></script>
 </body>
-
 </html>

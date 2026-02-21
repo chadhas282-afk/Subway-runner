@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const restartBtn = document.getElementById('restart-btn');
     const startScreen = document.getElementById('start-screen');
     const gameOverScreen = document.getElementById('game-over-screen');
-    const scoreUI = document.getElementById('score-display');
+    const scoreContainer = document.getElementById('score-container');
+    
     const leftBtn = document.getElementById('left-btn');
     const rightBtn = document.getElementById('right-btn');
     const jumpBtn = document.getElementById('jump-btn');
@@ -22,122 +23,75 @@ document.addEventListener('DOMContentLoaded', () => {
         player.style.left = `${lanes[playerPos]}px`;
         world.appendChild(player);
     }
-
-    function moveLeft() {
-        if (!isGameOver && playerPos > 0) {
-            playerPos--;
-            updatePosition();
-        }
-    }
-
-    function moveRight() {
-        if (!isGameOver && playerPos < 2) {
-            playerPos++;
-            updatePosition();
-        }
-    }
-
-    function jump() {
+    const moveLeft = () => { if (!isGameOver && playerPos > 0) { playerPos--; updateUI(); }};
+    const moveRight = () => { if (!isGameOver && playerPos < 2) { playerPos++; updateUI(); }};
+    const jump = () => {
         if (!isGameOver && !player.classList.contains('jumping')) {
             player.classList.add('jumping');
             setTimeout(() => player.classList.remove('jumping'), 600);
         }
-    }
-
-    function updatePosition() {
-        player.style.left = `${lanes[playerPos]}px`;
-    }
+    };
+    const updateUI = () => { player.style.left = `${lanes[playerPos]}px`; };
 
     function startGame() {
         score = 0;
         isGameOver = false;
         playerPos = 1;
-        updatePosition();
-        
-        if (startScreen) startScreen.classList.add('hidden');
-        if (gameOverScreen) gameOverScreen.classList.add('hidden');
-        if (scoreUI) scoreUI.classList.remove('hidden');
-        
-        document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
-        
+        updateUI();
+        startScreen.classList.add('hidden');
+        gameOverScreen.classList.add('hidden');
+        scoreContainer.classList.remove('hidden');
+        document.querySelectorAll('.obstacle').forEach(o => o.remove());
         requestAnimationFrame(gameLoop);
     }
 
     function gameLoop() {
         if (isGameOver) return;
+        score += 0.2; 
+        if (scoreDisplay) scoreDisplay.innerText = Math.floor(score);
         
-        score += 0.15;
-        if (scoreDisplay) {
-            scoreDisplay.innerText = Math.floor(score);
-        }
-        
-        if (Math.random() < 0.02) {
-            createObstacle();
-        }
-        
+        if (Math.random() < 0.02) createObstacle();
         requestAnimationFrame(gameLoop);
     }
 
     function createObstacle() {
-        if (!world) return;
-        const obstacle = document.createElement('div');
-        const laneIndex = Math.floor(Math.random() * 3);
-        
-        obstacle.classList.add('obstacle');
-        obstacle.style.left = `${lanes[laneIndex]}px`;
-        world.appendChild(obstacle);
+        const obs = document.createElement('div');
+        const laneIdx = Math.floor(Math.random() * 3);
+        obs.classList.add('obstacle');
+        obs.style.left = `${lanes[laneIdx]}px`;
+        world.appendChild(obs);
 
-        let topPos = -50;
-        const fallSpeed = 5 + (score / 1000);
+        let top = -50;
+        let speed = 6 + (score / 1000);
 
-        const fallInterval = setInterval(() => {
-            if (isGameOver) {
-                clearInterval(fallInterval);
-                obstacle.remove();
-                return;
+        const fall = setInterval(() => {
+            if (isGameOver) { clearInterval(fall); obs.remove(); return; }
+            top += speed;
+            obs.style.top = `${top}px`;
+
+            // Collision Detection
+            if (top > 480 && top < 540 && lanes[laneIdx] === lanes[playerPos]) {
+                if (!player.classList.contains('jumping')) endGame();
             }
-            
-            topPos += fallSpeed;
-            obstacle.style.top = `${topPos}px`;
-
-            if (topPos > 480 && topPos < 540 && lanes[laneIndex] === lanes[playerPos]) {
-                if (!player.classList.contains('jumping')) {
-                    endGame();
-                }
-            }
-
-            if (topPos > 650) {
-                clearInterval(fallInterval);
-                obstacle.remove();
-            }
+            if (top > 650) { clearInterval(fall); obs.remove(); }
         }, 20);
     }
 
     function endGame() {
         isGameOver = true;
-        if (finalScoreDisplay) finalScoreDisplay.innerText = Math.floor(score);
-        if (gameOverScreen) gameOverScreen.classList.remove('hidden');
+        finalScoreDisplay.innerText = Math.floor(score);
+        gameOverScreen.classList.remove('hidden');
     }
-
     window.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') moveLeft();
         if (e.key === 'ArrowRight') moveRight();
         if (e.key === ' ' || e.key === 'ArrowUp') jump();
     });
 
-    const handleTouch = (e, callback) => {
-        e.preventDefault();
-        callback();
+    const t = (btn, fn) => {
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); fn(); });
+        btn.addEventListener('click', fn);
     };
-
-    if (leftBtn) leftBtn.addEventListener('touchstart', (e) => handleTouch(e, moveLeft));
-    if (rightBtn) rightBtn.addEventListener('touchstart', (e) => handleTouch(e, moveRight));
-    if (jumpBtn) jumpBtn.addEventListener('touchstart', (e) => handleTouch(e, jump));
-
-    if (leftBtn) leftBtn.addEventListener('click', moveLeft);
-    if (rightBtn) rightBtn.addEventListener('click', moveRight);
-    if (jumpBtn) jumpBtn.addEventListener('click', jump);
-
-    if (startBtn) startBtn.addEventListener('click', startGame);
-    if (restartBtn) restartBtn.addEventListener('click', startGame);
+    t(leftBtn, moveLeft); t(rightBtn, moveRight); t(jumpBtn, jump);
+    startBtn.onclick = startGame; restartBtn.onclick = startGame;
 });
