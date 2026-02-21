@@ -1,17 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     const world = document.getElementById('world');
     const scoreDisplay = document.getElementById('score');
+    const highScoreDisplay = document.getElementById('high-score');
     const finalScoreDisplay = document.getElementById('final-score');
     const startBtn = document.getElementById('start-btn');
     const restartBtn = document.getElementById('restart-btn');
     const startScreen = document.getElementById('start-screen');
     const gameOverScreen = document.getElementById('game-over-screen');
-    const scoreUI = document.getElementById('score-display');
 
     let score = 0;
+    let highScore = localStorage.getItem('superHopperHighScore') || 0;
     let isGameOver = true;
-    let playerPos = 1; 
-    const lanes = [40, 130, 220]; 
+    let playerPos = 1;
+    const lanes = [40, 130, 220];
+
+    if (highScoreDisplay) highScoreDisplay.innerText = highScore;
 
     const player = document.createElement('div');
     player.classList.add('player');
@@ -22,30 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
         isGameOver = false;
         playerPos = 1;
         player.style.left = `${lanes[playerPos]}px`;
-        
-        if (scoreDisplay) scoreDisplay.innerText = "0";
+
         startScreen.classList.add('hidden');
         gameOverScreen.classList.add('hidden');
-        scoreUI.classList.remove('hidden');
-        
+        document.getElementById('score-display').classList.remove('hidden');
+
         document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
-        
+
         requestAnimationFrame(gameLoop);
     }
 
     function gameLoop() {
         if (isGameOver) return;
-        
-        score += 0.2; 
-        if (scoreDisplay) {
-            scoreDisplay.innerText = Math.floor(score);
-        }
-        
-        let spawnChance = 0.02 + (score / 10000); 
-        if (Math.random() < Math.min(spawnChance, 0.05)) {
+
+        score += 0.15;
+        scoreDisplay.innerText = Math.floor(score);
+
+        if (Math.random() < 0.02) {
             createObstacle();
         }
-        
+
         requestAnimationFrame(gameLoop);
     }
 
@@ -57,16 +56,17 @@ document.addEventListener('DOMContentLoaded', () => {
         world.appendChild(obstacle);
 
         let topPosition = -50;
-        
+
         const fallInterval = setInterval(() => {
             if (isGameOver) {
                 clearInterval(fallInterval);
                 obstacle.remove();
                 return;
             }
-            
-            topPosition += 5 + (score / 500); 
+
+            topPosition += (5 + (score / 1000));
             obstacle.style.top = `${topPosition}px`;
+
             if (topPosition > 480 && topPosition < 540 && lanes[laneIndex] === lanes[playerPos]) {
                 if (!player.classList.contains('jumping')) {
                     endGame();
@@ -82,23 +82,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function endGame() {
         isGameOver = true;
-        if (finalScoreDisplay) finalScoreDisplay.innerText = Math.floor(score);
+        const finalScore = Math.floor(score);
+        finalScoreDisplay.innerText = finalScore;
+
+        if (finalScore > highScore) {
+            highScore = finalScore;
+            localStorage.setItem('superHopperHighScore', highScore);
+            if (highScoreDisplay) highScoreDisplay.innerText = highScore;
+        }
+
         gameOverScreen.classList.remove('hidden');
     }
 
     window.addEventListener('keydown', (e) => {
         if (isGameOver) return;
-        
-        if (e.key === 'ArrowLeft' && playerPos > 0) {
-            playerPos--;
-        } else if (e.key === 'ArrowRight' && playerPos < 2) {
-            playerPos++;
-        } else if (e.key === ' ' || e.key === 'ArrowUp') {
-            if (!player.classList.contains('jumping')) {
-                player.classList.add('jumping');
-                setTimeout(() => player.classList.remove('jumping'), 600);
-            }
+
+        if (e.key === 'ArrowLeft' && playerPos > 0) playerPos--;
+        if (e.key === 'ArrowRight' && playerPos < 2) playerPos++;
+
+        if ((e.key === ' ' || e.key === 'ArrowUp') && !player.classList.contains('jumping')) {
+            player.classList.add('jumping');
+            setTimeout(() => player.classList.remove('jumping'), 600);
         }
+
         player.style.left = `${lanes[playerPos]}px`;
     });
 
