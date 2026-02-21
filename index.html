@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div id="game-container">
         <div id="score-container" class="hidden">
             <div class="score-box">
@@ -16,9 +15,9 @@
             </div>
         </div>
 
-        <div id="world"></div>
-
-        <div id="ui-layer">
+        <div id="world-wrapper">
+            <div id="world"></div>
+            
             <div id="start-screen" class="center-screen">
                 <h1 class="title">SUPER HOPPER</h1>
                 <p class="subtitle">MY ADVENTURE</p>
@@ -30,15 +29,14 @@
                 <p class="subtitle">FINAL SCORE: <span id="final-score">0</span></p>
                 <button id="restart-btn">TRY AGAIN</button>
             </div>
+        </div>
 
-            <div id="mobile-controls">
-                <button id="left-btn" class="ctrl-btn">←</button>
-                <button id="jump-btn" class="ctrl-btn">JUMP</button>
-                <button id="right-btn" class="ctrl-btn">→</button>
-            </div>
+        <div id="mobile-controls">
+            <button id="left-btn" class="ctrl-btn">←</button>
+            <button id="jump-btn" class="ctrl-btn">JUMP</button>
+            <button id="right-btn" class="ctrl-btn">→</button>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
