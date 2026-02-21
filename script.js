@@ -25,14 +25,43 @@ function startGame(){
     gameLoop();
 }
 
-// function gameLoop(){
-//     if (isGameOver) return;
+function gameLoop(){
+    if (isGameOver) return;
 
-//     if(Math.random < 0.02){
-//         createObstacle();
-//     }
-//     score++;
-//     scoreEl.innerText = Math.floor(score / 10);
-//     requestAnimationFrame(gameLoop);
-// }
+    if(Math.random < 0.02){
+        createObstacle();
+    }
+    score++;
+    scoreEl.innerText = Math.floor(score / 10);
+    requestAnimationFrame(gameLoop);
+}
 
+function createObstacle(){
+    const obstacle = document.getElementById("div")
+    const lane = Math.floor(Math.random() * 3);
+    obstacle.classList.add("obstacle");
+    obstacle.style.left = `${lanes[lane]}px`;
+    world.appendChild(obstacle);
+
+    let top= -50;
+    const fallInterval = setInterval(() => {
+      if (isGameOver){
+        clearInterval(fallInterval);
+        obstacle.remove();
+      }
+
+      top += 5
+      obstacle.style.top = `${top}px`;
+
+      if (top > 510 && top < 550 && lanes[lane] === lanes[playerPos]) {
+            endGame();
+        }
+
+        if(top>660){
+            clearInterval(fallInterval);
+            obstacle.remove();
+        }
+    }, 20)
+
+    
+}
