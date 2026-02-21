@@ -69,11 +69,18 @@ document.addEventListener('DOMContentLoaded', () => {
             top += speed;
             obs.style.top = `${top}px`;
 
-            // Collision Detection
-            if (top > 480 && top < 540 && lanes[laneIdx] === lanes[playerPos]) {
-                if (!player.classList.contains('jumping')) endGame();
+            if (top > 410 && top < 450 && lanes[laneIdx] === lanes[playerPos]) {
+                if (!player.classList.contains('jumping')) {
+                    obs.style.top = `${top}px`; 
+                    endGame();
+                    clearInterval(fall);
+                }
             }
-            if (top > 650) { clearInterval(fall); obs.remove(); }
+
+            if (top > 650) { 
+                clearInterval(fall); 
+                obs.remove(); 
+            }
         }, 20);
     }
 
