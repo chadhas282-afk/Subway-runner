@@ -15,12 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const player = document.createElement('div');
     player.classList.add('player');
-    if (world) {
-        player.style.left = `${lanes[playerPos]}px`;
-        world.appendChild(player);
-    } else {
-        console.error("Could not find div with id='world'. Check your HTML!");
-    }
+    if (world) world.appendChild(player);
 
     function startGame() {
         score = 0;
@@ -29,9 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
         player.style.left = `${lanes[playerPos]}px`;
         
         if (scoreDisplay) scoreDisplay.innerText = "0";
-        if (startScreen) startScreen.classList.add('hidden');
-        if (gameOverScreen) gameOverScreen.classList.add('hidden');
-        if (scoreUI) scoreUI.classList.remove('hidden');
+        startScreen.classList.add('hidden');
+        gameOverScreen.classList.add('hidden');
+        scoreUI.classList.remove('hidden');
+        
+        document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
         
         requestAnimationFrame(gameLoop);
     }
@@ -39,24 +36,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function gameLoop() {
         if (isGameOver) return;
         
-        if (Math.random() < 0.02) {
-            createObstacle();
+        score += 0.2; 
+        if (scoreDisplay) {
+            scoreDisplay.innerText = Math.floor(score);
         }
         
-        score++;
-        if (scoreDisplay) {
-            scoreDisplay.innerText = Math.floor(score / 10);
+        let spawnChance = 0.02 + (score / 10000); 
+        if (Math.random() < Math.min(spawnChance, 0.05)) {
+            createObstacle();
         }
         
         requestAnimationFrame(gameLoop);
     }
 
     function createObstacle() {
-        if (!world) return;
-
         const obstacle = document.createElement('div');
         const laneIndex = Math.floor(Math.random() * 3);
-        
         obstacle.classList.add('obstacle');
         obstacle.style.left = `${lanes[laneIndex]}px`;
         world.appendChild(obstacle);
@@ -70,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            topPosition += 6; 
+            topPosition += 5 + (score / 500); 
             obstacle.style.top = `${topPosition}px`;
             if (topPosition > 480 && topPosition < 540 && lanes[laneIndex] === lanes[playerPos]) {
                 if (!player.classList.contains('jumping')) {
@@ -87,24 +82,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function endGame() {
         isGameOver = true;
-        if (finalScoreDisplay) finalScoreDisplay.innerText = Math.floor(score / 10);
-        if (gameOverScreen) gameOverScreen.classList.remove('hidden');
+        if (finalScoreDisplay) finalScoreDisplay.innerText = Math.floor(score);
+        gameOverScreen.classList.remove('hidden');
     }
+
     window.addEventListener('keydown', (e) => {
         if (isGameOver) return;
         
-        if ((e.key === 'ArrowLeft') && playerPos > 0) {
+        if (e.key === 'ArrowLeft' && playerPos > 0) {
             playerPos--;
-        } else if ((e.key === 'ArrowRight') && playerPos < 2) {
+        } else if (e.key === 'ArrowRight' && playerPos < 2) {
             playerPos++;
         } else if (e.key === ' ' || e.key === 'ArrowUp') {
             if (!player.classList.contains('jumping')) {
                 player.classList.add('jumping');
-                setTimeout(() => player.classList.remove('jumping'), 500);
+                setTimeout(() => player.classList.remove('jumping'), 600);
             }
         }
         player.style.left = `${lanes[playerPos]}px`;
     });
-    if (startBtn) startBtn.addEventListener('click', startGame);
-    if (restartBtn) restartBtn.addEventListener('click', startGame);
+
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', startGame);
 });
