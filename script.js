@@ -25,14 +25,14 @@ function startGame(){
     gameLoop();
 }
 
-function gameLoop(){
-    if (isGameOver) return;
+// function gameLoop(){
+//     if (isGameOver) return;
 
-    if(Math.random < 0.02){
-        createObstacle();
-    }
-    score++;
-    scoreEl.innerText = Math.floor(score / 10);
-    requestAnimationFrame(gameLoop);
-}
+//     if(Math.random < 0.02){
+//         createObstacle();
+//     }
+//     score++;
+//     scoreEl.innerText = Math.floor(score / 10);
+//     requestAnimationFrame(gameLoop);
+// }
 
